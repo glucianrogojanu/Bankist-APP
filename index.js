@@ -79,9 +79,10 @@ const displayBalance = function(acc) {
     labelBalance.textContent = `${acc.movements.reduce((rez, elem) => rez + elem)}€`;
 };
 // Afisam tranzactiile contului logat.
-const displayMovements = function(acc) {
+const displayMovements = function(acc, sort = false) {
     containerMovements.innerHTML = "";
-    acc.movements.forEach(function(elem, index) {
+    let movs = sort ? acc.movements.slice(0).sort((a, b) => a - b) : acc.movements.slice(0);
+    movs.forEach(function(elem, index) {
         let html = `<div class="movements__row">
                         <div class="movements__type movements__type--${(elem > 0 ? "deposit" : "withdrawal")}">${(index + 1)} ${(elem > 0 ? "deposit" : "withdrawal")}</div>
                         <div class="movements__value">${elem}€</div>
@@ -120,6 +121,7 @@ formLogin.addEventListener("submit", function(e) {
     }
     currentAccount = accounts.find(elem => (elem.username === inputLoginUsername.value) && (elem.pin === Number(inputLoginPin.value)));
     if (currentAccount) {
+        isSorted = false;
         inputLoginUsername.value = inputLoginPin.value = "";
         inputLoginUsername.blur();
         inputLoginPin.blur();
@@ -200,4 +202,16 @@ formLoan.addEventListener("submit", function(e) {
         alert("Nu am putut face acest imprumut!");
         return;
     }
+});
+
+
+
+/* 
+SORT: Ne ordoneaza tranzactiile contului curent.
+*/
+let isSorted = false;
+btnSort.addEventListener("click", function(e) {
+    e.preventDefault();
+    displayMovements(currentAccount, !isSorted);
+    isSorted = isSorted ? false : true;
 });
