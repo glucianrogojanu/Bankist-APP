@@ -65,6 +65,7 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 
+
 // Creeam proprietatea "username" pentru fiecare cont: account1, account2, account3 si account4.
 const createUsernames = function() {
     accounts.forEach(function(elem) {
@@ -72,6 +73,7 @@ const createUsernames = function() {
     });
 };
 createUsernames();
+
 
 
 // Afisam balanta contului logat.
@@ -104,6 +106,7 @@ const displayUI = function(acc) {
 };
 
 
+
 /*
 LOGIN: Pentru a te loga la un cont, trebuie sa folosesti "username"-ul si "pin"-ul contului respectiv, care sunt proprietati ale obiectului respectiv.
 Sunt 4 seturi de date cu care ne putem loga(Reprezinta proprietatile "username" si "pin" ale celor 4 conturi):
@@ -113,6 +116,7 @@ Sunt 4 seturi de date cu care ne putem loga(Reprezinta proprietatile "username" 
    username - ss | pin - 4444
 */
 let currentAccount;
+let timer;
 formLogin.addEventListener("submit", function(e) {
     e.preventDefault();
     if (inputLoginUsername.value === "" || inputLoginPin.value === "") {
@@ -136,11 +140,15 @@ formLogin.addEventListener("submit", function(e) {
         let hours = String(actualDate.getHours()).padStart(2, 0);
         let minutes = String(actualDate.getMinutes()).padStart(2, 0);
         labelDate.textContent = `${date}/${month}/${year}, ${hours}:${minutes}`;
+        // Timer
+        if (timer) clearInterval(timer);
+        startLogOutTimer();
     } else {
         alert("Datele de logare sunt incorecte!");
         return;
     }
 });
+
 
 
 /* 
@@ -176,6 +184,7 @@ formTransfer.addEventListener("submit", function(e) {
 });
 
 
+
 /*
 CLOSE: Ca sa stergem un cont, trebuie sa fim logat in acesta si sa scriem username-ul si pin-ul asociate contului.
 */
@@ -190,6 +199,7 @@ formClose.addEventListener("submit", function(e) {
         return;
     }
 });
+
 
 
 /*
@@ -223,3 +233,30 @@ btnSort.addEventListener("click", function(e) {
     displayMovements(currentAccount, !isSorted);
     isSorted = isSorted ? false : true;
 });
+
+
+
+// Timer: De fiecare data cand ne logam, in partea de jos dreapta(Sub fereastra de "Close account") va porni un cronometru de la 5 minute. Daca trec cele 5 minute, automat vom primi logout.
+const startLogOutTimer = function() {
+    let time = 300;
+    let tick = function() {
+        const min = String(Math.trunc(time / 60)).padStart(2, 0);
+        const sec = String(time % 60).padStart(2, 0);
+        labelTimer.textContent = `${min}:${sec}`;
+    };
+    tick();
+    timer = setInterval(function() {
+        time--;
+        const min = String(Math.trunc(time / 60)).padStart(2, 0);
+        const sec = String(time % 60).padStart(2, 0);
+        labelTimer.textContent = `${min}:${sec}`;
+        if (time === 0) {
+            clearInterval(timer);
+            labelWelcome.textContent = "Log in to get started";
+            containerApp.style.opacity = "0";
+        };
+    }, 1000);
+};
+
+
+
