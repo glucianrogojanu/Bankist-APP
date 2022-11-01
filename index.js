@@ -128,6 +128,14 @@ formLogin.addEventListener("submit", function(e) {
         labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`;
         displayUI(currentAccount);
         containerApp.style.opacity = "1";
+        // Ne afiseaza data sub "Current balance":
+        let actualDate = new Date();
+        let date = String(actualDate.getDate()).padStart(2, 0);
+        let month = String(actualDate.getMonth() + 1).padStart(2, 0);
+        let year = actualDate.getFullYear();
+        let hours = String(actualDate.getHours()).padStart(2, 0);
+        let minutes = String(actualDate.getMinutes()).padStart(2, 0);
+        labelDate.textContent = `${date}/${month}/${year}, ${hours}:${minutes}`;
     } else {
         alert("Datele de logare sunt incorecte!");
         return;
