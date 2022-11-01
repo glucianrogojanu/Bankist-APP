@@ -94,7 +94,14 @@ const displayUI = function(acc) {
 
 
 
-// LOGIN: Pentru a te loga la un cont, trebuie sa folosesti "username"-ul si "pin"-ul contului respectiv, care sunt proprietati ale obiectului respectiv.
+/*
+LOGIN: Pentru a te loga la un cont, trebuie sa folosesti "username"-ul si "pin"-ul contului respectiv, care sunt proprietati ale obiectului respectiv.
+Sunt 4 seturi de date cu care ne putem loga:
+   username - js | pin - 1111
+   username - jd | pin - 2222
+   username - stw | pin - 3333
+   username - ss | pin - 4444
+*/
 let currentAccount;
 formLogin.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -112,6 +119,40 @@ formLogin.addEventListener("submit", function(e) {
         containerApp.style.opacity = "1";
     } else {
         alert("Datele de logare sunt incorecte!");
+        return;
+    }
+});
+
+
+
+/* 
+TRANSFER: Putem transfera o suma de bani altui cont.
+Conditii:
+   - Username-ul contului caruia vrem sa ii transferam bani sa fie corect.
+   - Username-ul contului caruia vrem sa ii transferam bani sa fie diferit de al tau. (Nu iti poti transfera bani tie.)
+   - Suma de transferat sa fie mai mare decat 0.
+   - Suma de transferat sa fie mai mica sau egala decat balanta contului ce transfera bani.
+*/
+formTransfer.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const receiverAcc = accounts.find(elem => elem.username === inputTransferTo.value);
+    if (!receiverAcc) {
+        alert("Nu exista un cont cu acest username!");
+        return;
+    }
+    if (receiverAcc === currentAccount) {
+        alert("Nu iti poti transfera bani tie!");
+        return;
+    }
+    if ((Number(inputTransferAmount.value) > 0) && (Number(inputTransferAmount.value) <= Number.parseInt(labelBalance.textContent))) {
+        receiverAcc.movements.push(Number(inputTransferAmount.value));
+        currentAccount.movements.push(-Number(inputTransferAmount.value));
+        displayUI(currentAccount);
+        inputTransferTo.blur();
+        inputTransferAmount.blur();
+        inputTransferTo.value = inputTransferAmount.value = "";
+    } else {
+        alert("Transfer nereusit!");
         return;
     }
 });
