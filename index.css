@@ -122,12 +122,6 @@ nav {
     border-radius: 10rem;
     margin-right: 2rem;
 }
-.movements__date {
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: #666;
-}
 .movements__type--deposit {
     background-image: linear-gradient(to top left, #39b385, #9be15d);
 }

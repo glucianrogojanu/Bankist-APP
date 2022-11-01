@@ -1,6 +1,16 @@
 "use strict";
 
 
+/* 
+ATENTIE:
+Sunt 4 seturi de date cu care ne putem loga(Reprezinta proprietatile "username" si "pin" ale celor 4 conturi):
+    username - js | pin - 1111
+    username - jd | pin - 2222
+    username - stw | pin - 3333
+    username - ss | pin - 4444
+*/
+
+
 // Datele initiale.
 const account1 = {
     owner: 'Jonas Schmedtmann',
@@ -40,6 +50,7 @@ const containerMovements = document.querySelector('.movements');
 const formLogin = document.querySelector("form.login");
 const formTransfer = document.querySelector("form.form--transfer");
 const formClose = document.querySelector("form.form--close");
+const formLoan = document.querySelector("form.form--loan");
 const btnLogin = document.querySelector('.login__btn');
 const btnTransfer = document.querySelector('.form__btn--transfer');
 const btnLoan = document.querySelector('.form__btn--loan');
@@ -54,7 +65,6 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 
-
 // Creeam proprietatea "username" pentru fiecare cont: account1, account2, account3 si account4.
 const createUsernames = function() {
     accounts.forEach(function(elem) {
@@ -62,7 +72,6 @@ const createUsernames = function() {
     });
 };
 createUsernames();
-
 
 
 // Afisam balanta contului logat.
@@ -94,10 +103,9 @@ const displayUI = function(acc) {
 };
 
 
-
 /*
 LOGIN: Pentru a te loga la un cont, trebuie sa folosesti "username"-ul si "pin"-ul contului respectiv, care sunt proprietati ale obiectului respectiv.
-Sunt 4 seturi de date cu care ne putem loga:
+Sunt 4 seturi de date cu care ne putem loga(Reprezinta proprietatile "username" si "pin" ale celor 4 conturi):
    username - js | pin - 1111
    username - jd | pin - 2222
    username - stw | pin - 3333
@@ -125,12 +133,11 @@ formLogin.addEventListener("submit", function(e) {
 });
 
 
-
 /* 
 TRANSFER: Putem transfera o suma de bani altui cont.
 Conditii:
    - Username-ul contului caruia vrem sa ii transferam bani sa fie corect.
-   - Username-ul contului caruia vrem sa ii transferam bani sa fie diferit de al tau. (Nu iti poti transfera bani tie.)
+   - Username-ul contului caruia vrem sa ii transferam bani sa fie diferit de cel in care suntem logati. (Nu iti poti transfera bani tie.)
    - Suma de transferat sa fie mai mare decat 0.
    - Suma de transferat sa fie mai mica sau egala decat balanta contului ce transfera bani.
 */
@@ -159,9 +166,8 @@ formTransfer.addEventListener("submit", function(e) {
 });
 
 
-
 /*
-CLOSE: Ca sa stergem un cont, trebuie sa fim logat in acesta, si sa scriem username-ul si pin-ul asociate contului.
+CLOSE: Ca sa stergem un cont, trebuie sa fim logat in acesta si sa scriem username-ul si pin-ul asociate contului.
 */
 formClose.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -169,5 +175,29 @@ formClose.addEventListener("submit", function(e) {
         let index = accounts.findIndex(elem => elem.username === currentAccount.username);
         accounts.splice(index, 1);
         containerApp.style.opacity = "0";
+    } else {
+        alert("Nu am putut sterge contul!");
+        return;
+    }
+});
+
+
+/*
+LOAN:
+    Putem face un imprumut cu 2 conditii:
+        1. Suma pe care vrem sa o imprumutam sa fie > 0.
+        2. Sa avem minim o depunere >= cu 10% din imprumutul pe care dorim sa-l facem. 
+        (Exemplu: Daca vrem sa imprumutam 1000, trebuie sa avem o depunere(Sau mai multe, dar minim una) cu o valoare de minim 100.)
+*/
+formLoan.addEventListener("submit", function(e) {
+    e.preventDefault();
+    if (currentAccount.movements.some(elem => elem >= 0.1 * Number(inputLoanAmount.value)) && Number(inputLoanAmount.value) > 0) {
+        currentAccount.movements.push(Number(inputLoanAmount.value));
+        displayUI(currentAccount);
+        inputLoanAmount.blur();
+        inputLoanAmount.value = "";
+    } else {
+        alert("Nu am putut face acest imprumut!");
+        return;
     }
 });
