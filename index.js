@@ -39,6 +39,7 @@ const containerApp = document.querySelector('.app');
 const containerMovements = document.querySelector('.movements');
 const formLogin = document.querySelector("form.login");
 const formTransfer = document.querySelector("form.form--transfer");
+const formClose = document.querySelector("form.form--close");
 const btnLogin = document.querySelector('.login__btn');
 const btnTransfer = document.querySelector('.form__btn--transfer');
 const btnLoan = document.querySelector('.form__btn--loan');
@@ -154,5 +155,19 @@ formTransfer.addEventListener("submit", function(e) {
     } else {
         alert("Transfer nereusit!");
         return;
+    }
+});
+
+
+
+/*
+CLOSE: Ca sa stergem un cont, trebuie sa fim logat in acesta, si sa scriem username-ul si pin-ul asociate contului.
+*/
+formClose.addEventListener("submit", function(e) {
+    e.preventDefault();
+    if (currentAccount.username === inputCloseUsername.value && currentAccount.pin === Number(inputClosePin.value)) {
+        let index = accounts.findIndex(elem => elem.username === currentAccount.username);
+        accounts.splice(index, 1);
+        containerApp.style.opacity = "0";
     }
 });
