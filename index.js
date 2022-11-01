@@ -1,6 +1,7 @@
 "use strict";
 
-// Data
+
+// Datele initiale.
 const account1 = {
     owner: 'Jonas Schmedtmann',
     movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
@@ -21,13 +22,12 @@ const account3 = {
 };
 const account4 = {
     owner: 'Sarah Smith',
-    movements: [430, 1000, 700, 50, 90],
+    movements: [430, 1000, 700, 50, -90],
     interestRate: 1,
     pin: 4444
 };
 const accounts = [account1, account2, account3, account4];
-
-// Elements
+// Selectam elementele.
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
 const labelBalance = document.querySelector('.balance__value');
@@ -37,6 +37,8 @@ const labelSumInterest = document.querySelector('.summary__value--interest');
 const labelTimer = document.querySelector('.timer');
 const containerApp = document.querySelector('.app');
 const containerMovements = document.querySelector('.movements');
+const formLogin = document.querySelector("form.login");
+const formTransfer = document.querySelector("form.form--transfer");
 const btnLogin = document.querySelector('.login__btn');
 const btnTransfer = document.querySelector('.form__btn--transfer');
 const btnLoan = document.querySelector('.form__btn--loan');
@@ -49,3 +51,67 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+
+
+
+// Creeam proprietatea "username" pentru fiecare cont: account1, account2, account3 si account4.
+const createUsernames = function() {
+    accounts.forEach(function(elem) {
+        elem.username = elem.owner.split(" ").map(elem => elem[0]).join("").toLowerCase();
+    });
+};
+createUsernames();
+
+
+
+// Afisam balanta contului logat.
+const displayBalance = function(acc) {
+    labelBalance.textContent = `${acc.movements.reduce((rez, elem) => rez + elem)}€`;
+};
+// Afisam tranzactiile contului logat.
+const displayMovements = function(acc) {
+    containerMovements.innerHTML = "";
+    acc.movements.forEach(function(elem, index) {
+        let html = `<div class="movements__row">
+                        <div class="movements__type movements__type--${(elem > 0 ? "deposit" : "withdrawal")}">${(index + 1)} ${(elem > 0 ? "deposit" : "withdrawal")}</div>
+                        <div class="movements__value">${elem}€</div>
+                    </div>`;
+        containerMovements.insertAdjacentHTML("afterbegin", html);
+    });
+};
+// Afisam suma totala depusa, suma totala scoasa si bonusul cumulat pentru contul logat.
+const displaySummary = function(acc) {
+    labelSumIn.textContent = `${(acc.movements.filter(elem => elem > 0).reduce((rez, elem) => rez + elem))}€`;
+    labelSumOut.textContent = `${(Math.abs(acc.movements.filter(elem => elem < 0).reduce((rez, elem) => rez + elem)))}€`;
+    labelSumInterest.textContent = `${(acc.movements.filter(elem => elem > 0).map(elem => elem * acc.interestRate * 0.01).filter(elem => elem >= 1).reduce((rez, elem) => rez + elem))}€`;
+};
+// Afisam toate detaliile despre contul logat.
+const displayUI = function(acc) {
+    displaySummary(acc);
+    displayBalance(acc);
+    displayMovements(acc);
+};
+
+
+
+// LOGIN: Pentru a te loga la un cont, trebuie sa folosesti "username"-ul si "pin"-ul contului respectiv, care sunt proprietati ale obiectului respectiv.
+let currentAccount;
+formLogin.addEventListener("submit", function(e) {
+    e.preventDefault();
+    if (inputLoginUsername.value === "" || inputLoginPin.value === "") {
+        alert("Trebuie sa introduceti un username si un pin!");
+        return;
+    }
+    currentAccount = accounts.find(elem => (elem.username === inputLoginUsername.value) && (elem.pin === Number(inputLoginPin.value)));
+    if (currentAccount) {
+        inputLoginUsername.value = inputLoginPin.value = "";
+        inputLoginUsername.blur();
+        inputLoginPin.blur();
+        labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`;
+        displayUI(currentAccount);
+        containerApp.style.opacity = "1";
+    } else {
+        alert("Datele de logare sunt incorecte!");
+        return;
+    }
+});
